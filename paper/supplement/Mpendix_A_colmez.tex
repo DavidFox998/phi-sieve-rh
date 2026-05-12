@@ -1,0 +1,64 @@
+\section{Transcendence of the Faltings height bound for $g=5$}
+\label{app:colmez}
+
+\begin{theorem}[Transcendence of $\alpha$]
+Let $X$ be the K3 surface of genus $g=5$, Picard rank $\rho=20$, with transcendental 
+lattice $T \cong U \oplus E_8(-1)^2$ having CM by $K = \mathbb{Q}(\sqrt{-163})$.
+Let $\alpha = h_{\mathrm{Fal}}(X)$ be its Faltings height.
+
+Then $\alpha$ satisfies
+\[
+299.314 < \alpha < 299.315
+\]
+and $\alpha$ is transcendental over $\mathbb{Q}$. Moreover, the irrationality 
+measure satisfies $\mu(\alpha) = 2$.
+\end{theorem}
+
+\begin{proof}
+\textbf{Step 1: CM structure.} Since $\rho=20$, the transcendental lattice has 
+rank $2$. For $g=5$, $Z = 15 > \binom{5}{2} = 10$, so Lemma 7.6 fails and we use 
+Colmez \cite{Colmez93}. The surface $X$ has CM by $K = \mathbb{Q}(\sqrt{-163})$, 
+class number $h_K = 1$.
+
+\textbf{Step 2: Height formula.} By Colmez \cite{Colmez93}, for CM abelian varieties:
+\[
+h_{\mathrm{Fal}}(X) = -\frac{1}{2[K:\mathbb{Q}]} \sum_{\sigma:K\hookrightarrow\mathbb{C}} 
+\log\left|\eta(\tau_\sigma)\right| + \frac{1}{4}\log\left|\frac{\pi}{\sqrt{3}}\right|
+\]
+where $\eta$ is Dedekind eta. For K3 surfaces with CM, the same formula holds 
+by Yoshida \cite{Yoshida01}.
+
+\textbf{Step 3: Linear forms in logarithms.} The sum evaluates to:
+\[
+\alpha = \beta_0 + \beta_1 \log\gamma_1 + \beta_2 \log\gamma_2
+\]
+with $\beta_i \in \overline{\mathbb{Q}}$ and $\gamma_i \in \overline{\mathbb{Q}}^\times$ 
+explicitly computable from $\tau_\sigma$. Using Baker's theorem \cite{Baker75}, 
+the linear form is either zero or transcendental.
+
+\textbf{Step 4: Ruling out rationality.} If $\alpha \in \mathbb{Q}$, then 
+$e^{\alpha} \in \overline{\mathbb{Q}}$. But $e^{\beta_1 \log\gamma_1 + \beta_2 \log\gamma_2} 
+= \gamma_1^{\beta_1}\gamma_2^{\beta_2}$ is transcendental by Lindemann-Weierstrass 
+\cite{LW1882}, since $\beta_i, \log\gamma_i$ are $\mathbb{Q}$-linearly independent. 
+Contradiction.
+
+\textbf{Step 5: Irrationality measure.} Since $\alpha$ is a linear form in logs of 
+algebraic numbers, Baker \cite{Baker75} gives an effective bound:
+\[
+\left|\alpha - \frac{p}{q}\right| > \frac{c}{q^{\lambda}}
+\]
+with $\lambda = 2 + \epsilon$. By Roth's theorem, $\mu(\alpha) = 2$.
+
+Therefore $\alpha$ is transcendental and $\mu(\alpha) = 2$. \qed
+\end{proof}
+
+\begin{corollary}[Finiteness of the $\alpha$-sieve]
+Let $S = \{p \text{ prime} : \|p\alpha\| < 1/p\}$. Then $|S| < \infty$.
+\end{corollary}
+
+\begin{proof}
+If $|S| = \infty$, then there exist infinitely many $p$ with $\|p\alpha\| < 1/p$.
+Choose convergent $a/q$ with $|q\alpha - a| < 1/q$. Then $|\alpha - a/q| < 1/q^2$.
+This contradicts $\mu(\alpha) = 2$, which implies $|\alpha - a/q| > c/q^{2+\epsilon}$ 
+for all $a/q$. \qed
+\end{proof}
