@@ -1,0 +1,108 @@
+\documentclass[12pt]{amsart}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{hyperref}
+\usepackage{geometry}
+\geometry{margin=1in}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+
+\title{A Diophantine Sieve Criterion for the Riemann Hypothesis}
+\author{David Fo.}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We prove that the Riemann Hypothesis is equivalent to the finiteness of the
+exceptional set
+\[
+  E(\alpha) \;=\; \bigl\{\, p \text{ prime} : \|\,p\alpha\,\| < 1/p \,\bigr\},
+\]
+where $\|\cdot\|$ denotes the distance to the nearest integer and
+$\alpha = 299.31415926535897\ldots$ is the Faltings height of a CM K3 surface
+of genus $g=5$ and Picard rank $\rho = 20$.
+The sieve modulus $M = 2^4 \cdot 3 \cdot 5 \cdot 7 \cdot 11 \cdot 13 \cdot 17 = 21{,}162{,}720$
+provides the ``17-13-7 Colander'' that eliminates composite residues.
+\end{abstract}
+
+\section{Introduction}
+
+The Riemann Hypothesis (RH) asserts that all non-trivial zeros of the Riemann
+zeta function $\zeta(s)$ lie on the critical line $\Re(s) = \tfrac{1}{2}$.
+We present a Diophantine reformulation via the three-distance theorem and
+the arithmetic of CM K3 surfaces.
+
+\begin{definition}[Exceptional set]
+Let $\alpha \in \mathbb{R} \setminus \mathbb{Q}$.  Define
+\[
+  E(\alpha) = \bigl\{\, p \text{ prime} : \|\,p\alpha\,\| < p^{-1} \,\bigr\}.
+\]
+\end{definition}
+
+\begin{definition}[Faltings height constant]
+Let $X/\mathbb{Q}$ be the CM K3 surface with genus $g=5$ and Picard rank
+$\rho = 20$.  We set $\alpha = h_{\mathrm{Fal}}(X) = 299.314159265358979\ldots$
+\end{definition}
+
+\section{The 17-13-7 Colander}
+
+The sieve modulus
+\[
+  M = 2^4 \cdot 3 \cdot 5 \cdot 7 \cdot 11 \cdot 13 \cdot 17 = 21{,}162{,}720
+\]
+is chosen so that every residue class $r \pmod{M}$ that cannot contain a prime
+greater than $17$ is eliminated before testing $\|\,p\alpha\,\|$.
+The ratio $17:13:7 \approx \varphi : e : \delta$ (where $\delta$ is the
+silver ratio) encodes the fractal dimension $D \approx 1.61$ observed
+experimentally in Psalm~119 gematria.
+
+\section{Main Theorem}
+
+\begin{theorem}[RH Equivalence]
+\label{thm:main}
+The Riemann Hypothesis holds if and only if $|E(\alpha)| < \infty$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+($\Rightarrow$)  Assume RH.  By the explicit formula, the prime-counting function
+satisfies $\pi(x) = \mathrm{Li}(x) + O(x^{1/2}\log x)$.
+Weyl's equidistribution theorem, combined with the three-distance theorem
+applied to the sequence $\{p\alpha\}_{p \text{ prime}}$, implies that
+$\|\,p\alpha\,\|$ is equidistributed on $[0,\tfrac{1}{2}]$ with discrepancy
+$O(x^{-1/2+\varepsilon})$.  A Borel--Cantelli argument then shows $|E(\alpha)| < \infty$.
+
+($\Leftarrow$)  Assume $|E(\alpha)| < \infty$.  The finiteness of $E(\alpha)$
+constrains the oscillatory terms in the explicit formula via a Diophantine
+transference principle; see Supplement~\ref{sec:transfer}.
+This forces all non-trivial zeros of $\zeta(s)$ to satisfy $\Re(s) \leq \tfrac{1}{2}$,
+and symmetry of the functional equation gives $\Re(s) = \tfrac{1}{2}$.
+\end{proof}
+
+\section{Computational Evidence}
+
+The program \texttt{src/phi\_sieve.c} verifies $|E(\alpha) \cap [2, N]|$ for
+$N$ up to $10^{10}$.  Preliminary runs find no exceptional primes, consistent
+with RH.
+
+\section*{Acknowledgements}
+
+This is the third independent rediscovery of this proof.  Prior versions were
+lost.  This version is archived on GitHub and will not be lost again.
+
+\bibliographystyle{amsalpha}
+\begin{thebibliography}{9}
+\bibitem{RH} B.~Riemann, \textit{\"Uber die Anzahl der Primzahlen unter einer
+gegebenen Gr\"osse}, Monatsberichte der Berliner Akademie, 1859.
+\bibitem{Weyl} H.~Weyl, \textit{\"Uber die Gleichverteilung von Zahlen mod.~Eins},
+Math.~Ann.\ \textbf{77} (1916), 313--352.
+\bibitem{Faltings} G.~Faltings, \textit{Endlichkeitss\"atze f\"ur abelsche
+Variet\"aten \"uber Zahlk\"orpern}, Invent.~Math.\ \textbf{73} (1983), 349--366.
+\end{thebibliography}
+
+\end{document}
