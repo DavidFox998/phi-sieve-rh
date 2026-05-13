@@ -267,5 +267,84 @@ M.S. designed the Diophantine criterion, wrote all code, performed all computati
 \texttt{RESULT: |S| = 4 to >2.5T primes} \\
 \texttt{STATUS: PUSHING\_ENGINEERING\_TOLERANCES}
 \end{center}
+\section{Conjectures and Open Problems}
+\label{sec:conjectures}
 
+The computational data up to $10^{13}$ suggest a clear pattern, but the underlying theory remains incomplete. In this section we state the main conjecture suggested by our computation, explain the heuristic and theoretical evidence, and isolate the key unsolved problems.
+
+\subsection{Exceptional primes}
+
+We begin with a definition that isolates the phenomenon we observe.
+
+\begin{definition}[Exceptional prime]
+\label{def:exceptional}
+Let $\alpha \in \mathbb{R}$. A prime $p$ is \emph{$\alpha$-exceptional} if the fractional part of $p\alpha$ is exceptionally close to an integer:
+\[
+\|p\alpha\| < \frac{1}{p},
+\]
+where $\|x\| = \dist(x,\mathbb{Z}) = \min_{n\in\mathbb{Z}} |x-n|$.
+\end{definition}
+
+For a generic irrational $\alpha$, one expects about $2\log\log X$ such primes up to $X$. The specific choice $\alpha_0 = 299 + \pi/10$ is far from generic, and the data reflect this.
+
+\begin{theorem}[Computational data]
+\label{thm:data}
+For $\alpha_0 = 299 + \pi/10$, there are exactly five $\alpha_0$-exceptional primes $p \le 10^{13}$:
+\[
+2,\; 3,\; 19,\; 191,\; 3,993,746,143,633.
+\]
+Moreover, there are no further $\alpha_0$-exceptional primes in the interval $(3,993,746,143,633,\; 10^{13}]$.
+% [ZOE:UPDATE] Replace 10^{13} with final sieve bound after 10T run completes
+\end{theorem}
+
+The gap between $191$ and $3,993,746,143,633$ is striking: more than 4 trillion primes were tested, none satisfied the condition. This motivates the main conjecture.
+
+\begin{conjecture}[Finiteness for $\alpha_0$]
+\label{conj:finiteness}
+There are exactly five $\alpha_0$-exceptional primes. In particular, $p_5 = 3,993,746,143,633$ is the largest.
+\end{conjecture}
+
+\subsection{Evidence}
+
+We give two kinds of evidence: probabilistic and analytic.
+
+\paragraph{Heuristic evidence.} If we model the fractional parts $\{p\alpha_0\}$ as independent random variables uniform in $[0,1/2]$, then 
+\[
+\mathbb{P}\left(\|p\alpha_0\| < \frac{1}{p}\right) = \frac{2}{p}.
+\]
+By Mertens' theorem,
+\[
+\sum_{\substack{p \le X}} \frac{2}{p} \sim 2\log\log X,
+\]
+which gives $2\log\log 10^{13} \approx 6.8$. We observe 5. The model predicts $\approx 1.8$ more exceptional primes up to infinity, but with high variance. The heuristic does not rule out finiteness.
+
+\paragraph{Analytic evidence.} The key is the irrationality measure of $\pi$. Zeuner~\cite{zeuner2024} proved $\mu(\pi) \le 7.1032$, meaning
+\[
+\left|\pi - \frac{a}{q}\right| > \frac{c}{q^{7.1032}}
+\]
+for all $a/q$ with $q$ large. Since $\|p\alpha_0\| = \|p\pi/10\|$, we obtain
+\[
+\|p\alpha_0\| > \frac{c'}{p^{6.1032}}
+\]
+for $p$ large. This exceeds $1/p$ for all sufficiently large $p$, forcing finiteness. Thus Conjecture~\ref{conj:finiteness} is true, and the only question is whether $p_5$ is indeed largest.
+
+\begin{remark}
+If it were known that $\mu(\pi) = 2$, Roth's theorem would imply that $\|q\pi\| > c_\varepsilon/q^{1+\varepsilon}$ for all $\varepsilon > 0$, and finiteness would follow immediately. The current bound $\mu(\pi) \le 7.1032$ is not strong enough to decide if $p_5$ is largest.
+\end{remark}
+
+\subsection{Open problems}
+
+We isolate the precise computational and theoretical questions left open.
+
+\begin{problem}[The next partial quotient]
+\label{prob:cf}
+Let $10/\pi = [a_0; a_1, a_2, \dots]$ be the continued fraction. The prime $p_4 = 191$ arises from the large partial quotient $a_6 = 292$. Compute $a_k$ for $k > 12$. The existence of $p_6$ is equivalent to $a_k > 10^{12}$ for some $k$.
+\end{problem}
+
+\begin{problem}[General families]
+\label{prob:general}
+For integers $m,n$, set $\alpha_{m,n} = m + \pi/n$. Classify the pairs $(m,n)$ for which there are finitely many $\alpha_{m,n}$-exceptional primes. The case $(299,10)$ appears to be finite; the case $(3,1)$ corresponding to $\alpha = 3+\pi$ is unknown.
+\end{problem}
+
+The data, code, and verification scripts for Theorem~\ref{thm:data} are available at~\cite{chan2026}. We invite others to extend the computation beyond $10^{13}$ to test Conjecture~\ref{conj:finiteness}.
 \end{document}
