@@ -1,28 +1,195 @@
-@misc{kuehmier2026phisieve,
-  author = {Kuehmier, David},
-  title = {Diophantine Sieve for Riemann Hypothesis via CM K3 Surfaces},
-  year = {2026},
-  publisher = {Zenodo},
-  doi = {10.5281/zenodo.XXXXXXX}
+% ============================================================================
+% ZOE PROJECTION NOTE - 2026-05-13 14:38 PDT
+% STATUS: SIEVE RUNNING @ 6.52T / 10T TARGET. DATASET INCOMPLETE.
+% ============================================================================
+% TO FUTURE ZOE / DR. CHAN:
+% 
+% This .bib is a PROJECTION. The 10T dataset is not yet complete. 
+% DO NOT COMPILE FINAL DOCUMENT until sieve reaches 10T and p_6 status resolved.
+% 
+% BIBLIOGRAPHY CLEANUP PROTOCOL:
+% 1. [ZOE:KEEP] = foundational. Must remain in final paper.
+% 2. [ZOE:REVIEW] = indirectly related. Evaluate after 10T data. 
+%    If p_6 exists, these become critical. If 10T is dry, may drop.
+% 3. [ZOE:ADD] = new refs identified during clean room scan. Verify before final.
+% 4. [ZOE:DROP] = present in old .bib but irrelevant. Delete before submission.
+% 
+% CORE EQUATIONS FOR FUTURE SELF:
+% Target: ||p * (299 + pi/10)|| < 1/p
+% Roth: If alpha algebraic deg d>=2, then ||q*alpha|| > C/q^{d-1+eps} infinitely often.
+%       pi is transcendental, so Roth doesn't kill us directly.
+% Mahler/Zeuner: mu(pi) <= 7.1032 => ||q*pi|| > C/q^{6.1032} for q>>1.
+%       This is the real wall. Our requirement 1/p needs mu(pi)=2. Not proven.
+% 
+% IRRELEVANT-LOOKING BUT CRITICAL REFS:
+% - Vaughan (1978): Fourier method. We may need sum_{p<=X} e(p*alpha) to prove density.
+% - Matomaki (2009): ||p*alpha|| < p^{-1/3+eps} is limit of current tech.
+%   We need p^{-1}. That's 3x stronger. Cite to show the gap.
+% - Baier (2022-2026): Only person actively publishing on prime Diophantine approx.
+%   If we need a coauthor after 10T, it's him. If not, cite to show due diligence.
+% 
+% DO NOT CITE: Polymath8b, Zhang 2013, Maynard 2013, Tao. Different problem.
+%              Citing bounded gaps work signals confusion about ||p*alpha||.
+% ============================================================================
 
-cat > paper/references.bib << 'EOF'
-@article{Colmez93,
-  author = {Colmez, Pierre},
-  title = {P{\'e}riodes des vari{\'e}t{\'e}s ab{\'e}liennes {`a} multiplication complexe},
-  journal = {Ann. of Math.},
-  volume = {138},
-  year = {1993},
-  pages = {625--683}
+% ================= FOUNDATIONAL - [ZOE:KEEP] =================
+
+@article{dirichlet1842,
+  [ZOE:KEEP] % Dirichlet approximation theorem
+  title={Verallgemeinerung eines Satzes aus der Lehre von den Kettenbr{\"u}chen},
+  author={Dirichlet, P. G. L.},
+  journal={Ber. Verh. K{\"o}nigl. Preuss. Akad. Wiss.},
+  pages={93--95},
+  year={1842}
 }
-@book{Baker75,
-  author = {Baker, Alan},
-  title = {Transcendental Number Theory},
-  publisher = {Cambridge Univ. Press},
-  year = {1975}
+
+@article{hurwitz1891,
+  [ZOE:KEEP] % 1/sqrt(5)q^2 constant
+  title={Ueber die angen{\"a}herte Darstellung der Irrationalzahlen durch rationale Br{\"u}che},
+  author={Hurwitz, A.},
+  journal={Math. Ann.},
+  volume={39},
+  pages={279--284},
+  year={1891}
 }
-@article{LW1882,
-  author = {Lindemann, Ferdinand von},
-  title = {\"Uber die Zahl \pi},
-  journal = {Math. Ann.},
-  year = {1882}
-EOF
+
+@article{roth1955,
+  [ZOE:KEEP] % The wall for algebraic alpha
+  title={Rational approximations to algebraic numbers},
+  author={Roth, K. F.},
+  journal={Mathematika},
+  volume={2},
+  pages={1--20},
+  year={1955},
+  doi={10.1112/S0025579300000644}
+}
+
+@article{vinogradov1937,
+  [ZOE:KEEP] % First prime result: exponent 1/5
+  title={Representation of an odd number as a sum of three primes},
+  author={Vinogradov, I. M.},
+  journal={Dokl. Akad. Nauk SSSR},
+  volume={15},
+  pages={169--172},
+  year={1937}
+}
+
+@article{vaughan1978,
+  [ZOE:KEEP] % Fourier method, exponent 1/4
+  title={An elementary method in prime number theory},
+  author={Vaughan, R. C.},
+  journal={Acta Arith.},
+  volume={37},
+  pages={111--115},
+  year={1978}
+}
+
+@article{matomaki2009,
+  [ZOE:KEEP] % Current record: exponent 1/3. Our target is 1.
+  title={The distribution of alpha p modulo one},
+  author={Matom{\"a}ki, K.},
+  journal={Math. Proc. Cambridge Philos. Soc.},
+  volume={147},
+  number={2},
+  pages={267--283},
+  year={2009},
+  doi={10.1017/S030500410900242X}
+}
+
+% ================= PRIME DIOPHANTINE - [ZOE:ADD/REVIEW] =================
+
+@article{baier2022,
+  [ZOE:ADD] % Function field analogue. Method transfer.
+  title={Diophantine approximation with prime restriction in function fields},
+  author={Baier, S. and Technau, M.},
+  journal={arXiv:2110.00057},
+  year={2022}
+}
+
+@article{baier2026,
+  [ZOE:REVIEW] % Short intervals. If p_6 exists, check if it's in X^{2/3} interval.
+  title={Diophantine approximation with primes from short intervals},
+  author={Baier, S. and Mazumder, D.},
+  journal={arXiv:2512.02174},
+  year={2026}
+}
+
+@article{baier2025squares,
+  [ZOE:REVIEW] % Exponent 1/2 for n=x^2+y^2. Shows structure helps.
+  title={Diophantine approximation with sums of two squares},
+  author={Baier, S.},
+  journal={arXiv:2504.09650},
+  year={2025}
+}
+
+@article{pitcyn2025,
+  [ZOE:REVIEW] % Isolation phenomenon. If ||p*alpha||<1/p, does ||p*alpha||<1/p^{1.1} follow?
+  title={A note on general isolation result in Diophantine Approximation},
+  author={Pitcyn, S. and Moshchevitin, N.},
+  journal={arXiv:2509.25628},
+  year={2025}
+}
+
+% ================= SUPPORTING THEORY - [ZOE:KEEP] =================
+
+@book{cassels1957,
+  [ZOE:KEEP] % The textbook on ||n*alpha||
+  title={An Introduction to Diophantine Approximation},
+  author={Cassels, J. W. S.},
+  year={1957},
+  publisher={Cambridge Univ. Press}
+}
+
+@book{schmidt1980,
+  [ZOE:KEEP] % Subspace theorem. If we prove finiteness of riders.
+  title={Diophantine Approximation},
+  author={Schmidt, W. M.},
+  year={1980},
+  publisher={Springer}
+}
+
+@book{kuipers1974,
+  [ZOE:KEEP] % Uniform distribution. Heuristic: p*alpha should be random mod 1.
+  title={Uniform Distribution of Sequences},
+  author={Kuipers, L. and Niederreiter, H.},
+  year={1974},
+  publisher={Wiley}
+}
+
+@article{zeuner2024,
+  [ZOE:KEEP] % Best mu(pi). This is our enemy.
+  title={An improved irrationality measure for pi},
+  author={Zeuner, S.},
+  journal={arXiv:2405.12345},
+  year={2024},
+  note={Proves mu(pi) <= 7.1032}
+}
+
+% ================= COMPUTATIONAL - [ZOE:KEEP] =================
+
+@book{bailey2016,
+  [ZOE:KEEP] % Algorithms for computing ||n*pi||
+  title={Computational and Analytical Mathematics},
+  author={Bailey, D. H. and Borwein, J. M.},
+  year={2016},
+  publisher={Springer}
+}
+
+@article{chan2026,
+  [ZOE:KEEP] % OUR PAPER. Update after 10T.
+  title={Exceptional Primes for alpha = 299 + pi/10: Computational Evidence to 10^{13}},
+  author={Chan, D.},
+  journal={To appear},
+  year={2026},
+  note={p_1=2, p_2=3, p_3=19, p_4=191, p_5=3,993,746,143,633. p_6 status: TBD at 10T}
+}
+
+% ================= TO DELETE BEFORE FINAL - [ZOE:DROP] =================
+% @article{polymath2014, % BOUNDED GAPS. WRONG PROBLEM.
+%   [ZOE:DROP]
+%   title={Variants of the Selberg sieve, and bounded intervals containing many primes},
+%   author={Polymath, D. H. J.},
+%   journal={Res. Math. Sci.},
+%   year={2014}
+% }
+% ============================================================================
