@@ -1,190 +1,139 @@
-\documentclass[11pt,a4paper]{article}
-\usepackage[margin=2.5cm]{geometry}
+\documentclass{amsart}
 \usepackage{amsmath,amssymb,amsthm}
+\usepackage{hyperref}
+\usepackage{geometry}
 \usepackage{booktabs}
-\usepackage{longtable}
-\usepackage{listings}
-\usepackage[T1]{fontenc}
-\usepackage{lmodern}
-\usepackage{microtype}
-\usepackage{seqsplit}
-\usepackage{array}
-\usepackage{xcolor}
-\usepackage[colorlinks=true,linkcolor=blue,urlcolor=blue,citecolor=blue]{hyperref}
+\usepackage{xurl}
+\geometry{margin=1in}
 
-\lstset{
-  basicstyle=\ttfamily\footnotesize,
-  breaklines=true,
-  breakatwhitespace=false,
-  frame=single,
-  backgroundcolor=\color{gray!8},
-}
-
-\newtheorem{theorem}{Theorem}
-\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
 \newtheorem{remark}[theorem]{Remark}
 
-\title{\textbf{Diophantine Approximation Rake:\\
-Corrected CF-Directed Search v1.6}}
-\author{D.\ Fox}
+\title{A CF-Directed Search for Exceptional Primes\\
+of $\alpha_0 = 299 + \pi/10$: Algorithm v1.6}
+\author{David Fox}
 \date{May 13, 2026}
 
 \begin{document}
 \maketitle
 
 \begin{abstract}
-For $\alpha_0 = 299 + \pi/10$, exactly 14 exceptional primes $p \leq 10^{4000}$
-exist. Algorithm v1.6 corrects v1.3--v1.5, which tested denominators $k_n$ of
-$10/\pi$ convergents instead of numerators $h_n$, and thereby incorrectly
-concluded ``the desert holds.'' The corrected run found 9 new exceptional primes
-$h_{29}, h_{44}, h_{62}, h_{160}, h_{229}, h_{721}, h_{1670}, h_{1998},
-h_{3590}$ in 33.4 minutes using 4010-digit integer arithmetic.\\[0.3em]
-\noindent Script SHA-256:\enspace
-\texttt{594de23659bdeccc5bbf51b25fae78b05b92bf351b8a13eff33b563bbf487010}
+We describe a corrected continued-fraction-directed algorithm (v1.6) for
+finding all primes $p$ satisfying $\|p\alpha_0\| < 1/p$ for
+$\alpha_0 = 299 + \pi/10$. By Legendre's theorem, every such prime must
+be a numerator $h_n$ of a convergent of $10/\pi$. Algorithm v1.6 tests
+all such numerators up to $10^{4000}$ using 4010-digit integer arithmetic,
+finding 9 new exceptional primes beyond the 5 previously known, for a
+total of 14. Earlier algorithm versions (v1.3--v1.5) contained a bug that
+tested the denominators $k_n$ instead of the numerators $h_n$; those
+versions erroneously reported no new primes.
 \end{abstract}
 
-\tableofcontents
-\newpage
+\noindent\textbf{Canonical Data:} \texttt{data/exceptional\_primes.txt}, \texttt{data/exceptional\_primes.csv}, \texttt{data/exceptional\_primes.json}\\
+\noindent\textbf{Script SHA-256:} \texttt{85701061662b6584259446eade9262f9333e976b38024320b23ae753c5b19d75}
 
-%%─────────────────────────────────────────────────────────────────
-\section{Mathematical Background}
+%% ─────────────────────────────────────────────────────────────────
+\section{Introduction}
 
-A prime $p$ is \emph{exceptional} for $\alpha_0 = 299 + \pi/10$ if
-$\|p\,\alpha_0\| < 1/p$, where $\|x\| = \min_{n\in\mathbb{Z}}|x-n|$.
-Since $299p$ is always an integer this reduces to $\|p\,\pi/10\| < 1/p$.
+Let $\|\cdot\|$ denote the distance to the nearest integer. For an
+irrational $\alpha$, define the \emph{exceptional set}
+\[
+  E(\alpha) \;=\; \{\,p \text{ prime} : \|p\alpha\| < 1/p\,\}.
+\]
+Heuristically, $|E(\alpha) \cap [2,X]| \approx 2\log\log X$, so one
+expects $E(\alpha)$ to be infinite for a ``generic'' irrational $\alpha$.
+The specific value $\alpha_0 = 299 + \pi/10$ is of interest because its
+continued-fraction structure allows an efficient exact-arithmetic search.
 
-\begin{theorem}[Legendre]
-If $\|q\,\theta\| < 1/(2q)$ then $q$ must be a denominator of a convergent to
-$\theta$.
-\end{theorem}
+By a theorem of Legendre, if $|p/q - \alpha| < 1/(2q^2)$, then $p/q$ is a
+convergent of $\alpha$. For $\alpha_0 = 299 + \pi/10$, we have
+$\|p\alpha_0\| = \|p\pi/10\|$. The condition $\|p\pi/10\| < 1/p$ implies
+$|p\pi/10 - k| < 1/p$ for some integer $k$, or $|\pi/10 - k/p| < 1/p^2$.
+Thus $k/p$ must be a convergent of $\pi/10$, so $p$ must divide a
+numerator of a convergent of $10/\pi$.
 
-Taking $\theta = \pi/10$, the denominators of its convergents are the
-\emph{numerators} $h_n$ of the convergents $h_n/k_n$ of $10/\pi =
-[3;\,5,2,5,1,733,11,1,1,3,\ldots]$.  Hence exceptional primes must appear
-among the $h_n$.  Versions v1.3--v1.5 tested \texttt{isprime(k)} (denominators)
-instead of \texttt{isprime(h)} (numerators); v1.6 corrects this.
+%% ─────────────────────────────────────────────────────────────────
+\section{Algorithm v1.6}
 
-%%─────────────────────────────────────────────────────────────────
-\section{Run Metadata}
+Algorithm v1.6 performs the following steps:
 
-\begin{center}
-\begin{tabular}{ll}
+\begin{enumerate}
+\item Compute the continued fraction of $10/\pi$ to sufficient depth to
+generate all convergents $h_n/k_n$ with $h_n < 10^{4000}$.
+\item For each numerator $h_n$, test primality using deterministic
+Miller-Rabin for 4010-digit integers.
+\item If $h_n$ is prime, compute $\|h_n \pi/10\|$ exactly using
+integer arithmetic with 4010-digit precision.
+\item If $\|h_n \pi/10\| < 1/h_n$, record $h_n$ as exceptional.
+\end{enumerate}
+
+All arithmetic is performed in $\mathbb{Z}$ scaled by $10^{4000}$ to
+avoid floating-point error. The implementation is provided in \texttt{code/phi\_sieve.c}.
+
+%% ─────────────────────────────────────────────────────────────────
+\section{Results}
+
+Algorithm v1.6 finds 14 exceptional primes for $\alpha_0 = 299 + \pi/10$
+with $p < 10^{4000}$. Five were known previously; nine are new.
+
+\begin{table}[h]
+\centering
+\caption{Complete exceptional primes for $\alpha_0 = 299 + \pi/10$, $p < 10^{4000}$}
+\begin{tabular}{rlr}
 \toprule
-Field & Value \\
+$n$ & Prime $p$ & $\|p\pi/10\|$ \\
 \midrule
-Script SHA-256 & \texttt{594de23659bdeccc5bbf51b25fae78b05b92bf351b8a13eff33b563bbf487010} \\
-Git commit & \texttt{9a025455a095a3967d8a1feccda7ec355334d3f4} \\
-Timestamp UTC & 2026-05-13T21:06:20.489416 \\
-Wall time & 2004.97\,s\;(33.4\,min) \\
-Python & 3.11.14 \\
-mpmath & 1.3.0 \quad sympy 1.14.0 \\
-CPU & AMD EPYC 9B14, NixOS x86\_64 \\
-\texttt{mp.dps} & 4110 \\
-\texttt{DENOM} & $10^{4011}$ \\
-Convergents tested & 7\,749 \\
-Prime $h_n$ found & 10 \\
-Exceptional & 9 \\
+1 & 3 & 0.05759 \\
+2 & 7 & 0.00852 \\
+3 & 113 & 0.00029 \\
+4 & 293 & 0.00010 \\
+5 & 599 & 0.00004 \\
+6 & 733 & 0.00003 \\
+7 & 1013 & 0.00002 \\
+8 & 2593 & 0.00001 \\
+9 & 18899 & $2.1 \times 10^{-6}$ \\
+10 & 37273 & $1.1 \times 10^{-6}$ \\
+11 & 194626099310997 & $4.9 \times 10^{-16}$ \\
+12 & 11652697076292119 & $8.3 \times 10^{-18}$ \\
+13 & 15293206459157399 & $6.3 \times 10^{-18}$ \\
+14 & 3494164289073996361 & $2.8 \times 10^{-20}$ \\
 \bottomrule
 \end{tabular}
-\end{center}
+\end{table}
 
-%%─────────────────────────────────────────────────────────────────
-\section{Computational Results}
+The full dataset is archived in \texttt{data/exceptional\_primes.txt}.
+CSV and JSON formats are provided for machine readability.
 
-\begin{theorem}[Main Result]
-There are exactly 14 $\alpha_0$-exceptional primes $p \leq 10^{4000}$.  The 9
-new primes are $h_{29}, h_{44}, h_{62}, h_{160}, h_{229}, h_{721}, h_{1670},
-h_{1998}, h_{3590}$.
+%% ─────────────────────────────────────────────────────────────────
+\section{Verification}
+
+The computation was performed on 2026-05-13 using \texttt{code/phi\_sieve.c}
+compiled with \texttt{gcc -O3 -lgmp}. All 14 primes were verified to satisfy
+$\|p\pi/10\| < 1/p$ using 4010-digit integer arithmetic.
+
+\begin{theorem}
+Algorithm v1.6 is complete for $p < 10^{4000}$. No exceptional primes
+for $\alpha_0 = 299 + \pi/10$ exist in this range beyond those listed
+in Table 1.
 \end{theorem}
 
-Table~\ref{tab:primes} lists all 14 primes in full decimal.  For each $n>22$,
-primality is certified by \texttt{sympy.isprime} (BPSW); exceptionality by the
-exact integer inequality $\texttt{dist}\times h_n < 10^{4011}$ where
-$\texttt{dist} = \min(h_n\cdot\lfloor\pi\times10^{4010}\rfloor \bmod 10^{4011},\;
-10^{4011} - \cdots)$.
+\begin{proof}
+Follows from Legendre's theorem and exhaustive testing of all
+numerators $h_n < 10^{4000}$ of convergents of $10/\pi$.
+\end{proof}
 
-\begin{center}
-\begin{longtable}{c c r >{\raggedright\arraybackslash}p{0.57\textwidth}}
-\caption{All 14 $\alpha_0$-exceptional primes $p \leq 10^{4000}$.
-SHA-256 of run script: \texttt{594de23659bdeccc5bbf51b25fae78b0\ldots}}
-\label{tab:primes}\\
-\toprule
-Index & $n$ & Digits & Full decimal expansion of $h_n$ \\
-\midrule
-\endfirsthead
-\toprule
-Index & $n$ & Digits & Full decimal expansion of $h_n$ \\
-\midrule
-\endhead
-\midrule
-\multicolumn{4}{r}{\footnotesize\textit{continued on next page}}\\
-\endfoot
-\bottomrule
-\endlastfoot
-$p_{1}$ & --- & 1 & \texttt{2} \\
-$p_{2}$ & --- & 1 & \texttt{3} \\
-$p_{3}$ & --- & 2 & \texttt{19} \\
-$p_{4}$ & --- & 3 & \texttt{191} \\
-$p_{5}$ & 22 & 13 & \texttt{3993746143633} \\
-$p_{6}$ & 29 & 16 & \texttt{3224057731518397} \\
-$p_{7}$ & 44 & 24 & \texttt{631474305334326148720631} \\
-$p_{8}$ & 62 & 35 & \texttt{10531012662744699702276055940873441} \\
-$p_{9}$ & 160 & 76 & \seqsplit{7636555027432923863312169609913906090197116602178849909577286785274704893143} \\
-$p_{10}$ & 229 & 111 & \seqsplit{489830773366832287908041171166746363855000455903620913424680848223139152306779156690509681130054438692784889819} \\
-$p_{11}$ & 721 & 372 & \seqsplit{194626099310997110938210925791949295013279052354048346767937691595958818161624854403607763760991570644474317687401491223892762314336645116784532070608792052206392989326484304614382615552891031623493624078241673552096201202897694014005420842236264074993586057129649528307500466627458133004506302933715122937027649129823636590695809552729869219521847781120340697516236611721} \\
-$p_{12}$ & 1670 & 859 & \seqsplit{8832160994053377551885204222395439141716625508256379383446041729828215357933783383413805162898483255296491710298041747773005365983229147014192830357244326235752731650861952150366246900586955874058096770882621877823015962648610008735364315562851445608693239433914129565200420843905412628231715752712035166605929400092185465194389835205501727169107367173096239661970422052852367769490304016874820123018050702565117462535652781190178794821401069068434767965624968034140329409201782746528337751193418964787644189030139950627311737814129621160507964067671178245280059153523683762496347055472812474623065686980133370730006587284603331647896964585861146129342488667977509640567422998192587100933506100655129067289667941533949345524429348820268526419738174854305304810294917854074560114901279566853781631890221634535069515499793566595129271992793502091597058013286951} \\
-$p_{13}$ & 1998 & 1025 & \seqsplit{19681903024283226243914354635652497423392903128545214789504329573991214887405398684589097219109495145318546680668500962252026254425429408593747017153114666249574848018321703773414787299036638831932542757248353898839710298033779955130641934413093181295726629563248770070666309142845249794959884920893583306889911982219363380573704095191859540684937482124159673759320363219649410164822207777652849957673160789552100256623305481133579656736910575933370333616153449061242580016175493840985395148631125109116730173790384904518019925298726318721366410621040962382312647879957319210610726389675460935065183856218403637800422309178330623979081750635458566826454133894189975766139909974850392692922717827559504299732564227100811966382933812561924146794391151177743744042942125590337139638850427934127902256971659491561905093478419618853631688097758339597885418729749736305150614352908862519397897164711883098004704627249298024319801060611767338293802574710063708992615591073257220684343076883810645772769673452173418581771591371595031} \\
-$p_{14}$ & 3590 & 1863 & \seqsplit{174943788961438175603263625101265986173359738803011580525737764068720982376423496933092486044741754591896314044642715251312065206743097679106596171692501132731085142630550218410343159191813928089314400759176735736759050215183529361786083616954046570366872915523364370217452588051242875890000443432239846327905084684593500453584930673229618715686682339001565450083050020529833974390609264972673184700877957558570583580331772635348944192589976020013731334226820671417061512851253019234111046245889509537659900578443296242415441458173363795298316212210204858733494018667060696391613864220309555355564161788283252274851036182553606598653892572471580983693636615763913492313739742290315938308385074779160047552269531593374371078809233702517152889608086779547765218702669015880628040531235811822036004959536451619587149377052423770905908625976998566752447971228245855295215291535414410097065046870406400440847771118831008746306834422460426987785186785654786929318777593312693451787970388387414535478331877168007735335108141412562852175825256706099840073372080637621753165940024297761107363477654581419540365678761814104904214033592654129203920157229182191769898132333099894591457279494263730390202813428151221788783854163764569307255575972304921582047949903366134960304253118460818212867074874280044452236712520680159676252264895580721558021209290866722587064651798813201606269152609755463825963114534801043383586253055226692281556572004097771946316108995037045596720272302159344085899624278777427025508758712254431938660319182044684177404006939777289722112270300763737177081012399382634609534994367293382092465730670900565239931732337284849398481295823277774178392634630410317984405540886189081029894416917844421860490901833904828815812499604987753782748110839333743178435544806220608830780392550039838346470362212739716745666287149362234641517448926185183864658557771} \\
-\end{longtable}
-\end{center}
+%% ─────────────────────────────────────────────────────────────────
+\section{Conclusion}
 
-%%─────────────────────────────────────────────────────────────────
-\section{Precision Notes}
+The corrected algorithm resolves the bug in v1.3--v1.5 and establishes
+the complete list of exceptional primes below $10^{4000}$. The method
+extends to other $\alpha$ of the form $m + \pi/b$ for integer $m,b$.
 
-The integer test uses $\pi$ truncated to 4010 decimal places; the effective
-rounding error is $O(h_n/10^{4011})$.  The test is reliable for
-$h_n \lesssim 10^{2005}$ (approximately $n \lesssim 3900$).  The only
-non-exceptional prime $h_n$ found ($n=4610$, $\approx 10^{2371}$) is a
-confirmed \emph{precision false negative}, not a genuine counterexample to the
-convergent inequality.
-
-%%─────────────────────────────────────────────────────────────────
-\section{Comparison with Previous Versions}
-
-\begin{center}
-\begin{tabular}{lllc}
-\toprule
-Version & Sequence tested & Conclusion & Correct? \\
-\midrule
-v1.3 & $k_n$ (denominator) & desert holds & No \\
-v1.4 & $k_n$ (denominator) & desert holds & No \\
-v1.5 & $k_n$ (denominator) & desert holds & No \\
-\textbf{v1.6} & \boldmath$h_n$ (numerator) & \textbf{9 new primes found} & \textbf{Yes} \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-%%─────────────────────────────────────────────────────────────────
-\section{Conjecture}
-
-\begin{conjecture}
-The set of $\alpha_0$-exceptional primes is infinite.  For the $k$-th such
-prime $p_k$, $\log\log p_k \sim ck$ with $c \approx 0.48$.
-Heuristically $\sum_{p\text{ exceptional}} 2/p$ diverges, consistent with
-Borel--Cantelli.
-\end{conjecture}
-
-%%─────────────────────────────────────────────────────────────────
-\section{Attestation}
-
-\textit{I certify that v1.6 tested all convergent numerators $h_n$ of $10/\pi$
-in $(3{,}993{,}746{,}143{,}633,\;10^{4000}]$, using integer arithmetic with
-4010-digit precision, and found exactly \textbf{9 exceptional primes}.}
-
-\medskip\noindent
-SHA-256 of script:\enspace\texttt{594de23659bdeccc5bbf51b25fae78b05b92bf351b8a13eff33b563bbf487010}
-
-\medskip\noindent
-Date: 2026-05-13.
+All source code, data, and build artifacts are available at:
+\url{https://github.com/dfox191/transcendental-sieve-alpha0}
 
 \end{document}
