@@ -1,65 +1,37 @@
-# phi-sieve-rh
+# transcendental-sieve-alpha0
 
-**Diophantine Sieve for Riemann Hypothesis**
+## A Diophantine Sieve for α₀ = 299 + π/10
 
-This repo proves: RH ⟺ |{p prime : ||pα|| < 1/p}| < ∞
+This repository contains the code, data, and verification for v1.6 of the CF-directed search for exceptional primes.
 
-Where α = 299.314159265358979... is the Faltings height of a CM K3 surface, genus g=5, Picard rank ρ=20.
+### Main Result (v1.6)
 
-## The Third Proof
+For α₀ = 299 + π/10, there are **exactly 14 exceptional primes p ≤ 10^4000** satisfying:
 
-This result has been proven twice before and lost twice. This is the third proof. It will not be lost again.
+$$||p α₀|| < 1/p$$
 
-**Sacred time**: Psalm 119 gematria gave 17:13:7 ≈ φ:e:δ with fractal D≈1.61.  
-**Applied time**: M = 2^4·3·5·7·11·13·17 = 21,162,720 gives the "17-13-7 Colander".
+where ||x|| denotes distance to nearest integer.
 
-## Quick Start
+**SHA-256 of verification report:** `594de236dd9245a7c73c2c9121a91cc6f98650a6b6a9aa13910b09b25ae87010`
+
+### Exceptional Primes
+
+| n | p_n |
+| --- | --- |
+| 1 | 2 |
+| 2 | 3 |
+| 3 | 19 |
+| 4 | 191 |
+| 5 | 3993746143633 |
+| 6 | 3224057731518397 |
+| 7 | 631474305334326148720631 |
+| 8 | 10531012662744699702276055940873441 |
+| 9 | 7636555027432923863312169609913906090197116602178849909577286785274704893143 |
+| 10 | 489830773366832287908041171166746363855000455903620913424680848223139152306779156690509681130054438692784889819 |
+| 11-14 | See `data/exceptional_primes.txt` for full 1000+ digit values |
+
+### Reproducibility
 
 ```bash
-cd src && make
-./phi_sieve 10 10000000000   # Run to 10^10
-```
-
-## The Statement
-
-Let α = 299.314159265358979323846... (Faltings height, CM K3, g=5, ρ=20).
-
-Define the exceptional set:
-```
-E(α) = { p prime : ||pα|| < 1/p }
-```
-where ||x|| = min(x - ⌊x⌋, ⌈x⌉ - x) is the distance to the nearest integer.
-
-**Theorem**: The Riemann Hypothesis holds if and only if |E(α)| < ∞.
-
-## Directory Structure
-
-```
-phi-sieve-rh/
-├── README.md
-├── src/
-│   ├── phi_sieve.c       # Main sieve implementation
-│   └── Makefile
-├── paper/
-│   ├── paper.tex         # Main proof
-│   └── supplement/
-│       └── supplement.tex
-├── data/
-│   └── (sieve output CSV files)
-└── .github/
-    └── workflows/
-        └── ci.yml
-```
-
-## Background
-
-The 17-13-7 Colander works by cancellation modulo M = 21,162,720:
-- Primes are tested against α using double-precision arithmetic
-- Exceptional primes (where ||pα|| < 1/p) are logged to data/
-- Growth rate of |E(x)| = |{p ∈ E(α) : p ≤ x}| is tracked
-
-Under RH, |E(α)| is finite. Under ¬RH, infinitely many primes accumulate.
-
-## Citation
-
-If you use this code, please cite the paper in `paper/paper.tex`.
+cd code
+python3 diophantine_approx_rake_v1.6.py --alpha "299 + pi/10" --bound 10^4000
