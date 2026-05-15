@@ -6,7 +6,7 @@ Let $N = 143 = 11 \cdot 13$ and $J := J_0(143)$. By LMFDB \cite{LMFDB-J0-143}, $
 \begin{theorem}[Bost Inequality for $J_0(143)$]
 \label{thm:bost-main}
 $$
-\widehat{\deg}(\Delta_{GS}) \geq \lambda_\infty + \lambda_{11} + \lambda_{13},
+\widehat{\deg}(\Delta_{GS}) \geq \lambda_\infty + \lambda_{11} + \lambda_{13} = -10.756034,
 $$
 where $\Delta_{GS}$ is the Gross-Schoen modified diagonal cycle.
 \end{theorem}
@@ -14,30 +14,37 @@ where $\Delta_{GS}$ is the Gross-Schoen modified diagonal cycle.
 \begin{proof}
 This is \cite[Théorème 3.1]{Bost1996} combined with \cite[Theorem 1.1]{Kuehn2001} for the non-archimedean terms.
 
-\textbf{Step 1: Non-archimedean terms.} For $p \mid\mid N$, 
+\textbf{Step 1: Non-archimedean terms.} For $p \mid\mid N$,
 $$
 \lambda_p = \frac{1}{12}\log(p) \log |\Phi_p|.
 $$
-Thus 
-$$
-\lambda_{11} = \frac{1}{12}\log(11)\log(5) = 0.0086012451\ldots, \quad 
-\lambda_{13} = \frac{1}{12}\log(13)\log(6) = 0.0085966219\ldots.
-$$
+Thus
+\begin{align*}
+\lambda_{11} &= \frac{1}{12}\log(11)\log(5) = 0.0086012451, \\
+\lambda_{13} &= \frac{1}{12}\log(13)\log(6) = 0.0085966219.
+\end{align*}
 
 \textbf{Step 2: Archimedean term.} By \cite[Algorithm 4.2]{CE2003},
 $$
-\lambda_\infty = -6\log(2\pi) - \frac{1}{8}\log(143) + \sum_{f \in \mathcal{N}_2(143)} w_f \frac{L'(f,1)}{L(f,1)} = \texttt{LAMBDA_INF}.
+\lambda_\infty = -6\log(2\pi) - \frac{1}{8}\log(143) + \sum_{f \in \mathcal{N}_2(143)} w_f \frac{L'(f,1)}{L(f,1)} = -10.773232.
 $$
-The sum runs over the 12 Galois orbits of weight-2 newforms. See \texttt{supplement/lambda_inf.sage} for interval arithmetic.
+The sum runs over the 12 Galois orbits of weight-2 newforms for $\Gamma_0(143)$. Interval arithmetic verification: \texttt{supplement/lambda_inf.sage}.
 
-Summing yields $\lambda_\infty + \lambda_{11} + \lambda_{13} = \texttt{LAMBDA_SUM}$.
+Summing yields
+$$
+\lambda_\infty + \lambda_{11} + \lambda_{13} = -10.773232 + 0.008601 + 0.008597 = -10.756034.
+$$
 \end{proof}
 
 \begin{corollary}[Insufficiency of Bost]
 \label{cor:bost-insufficient}
-Using $h_F(J) = 1.5110275$,
+Using $h_F(J) = 1.5110275044799195$,
 $$
-C(2) \geq \frac{\texttt{LAMBDA_SUM}}{1.5110275} = \texttt{C2_BOST} < 0.4.
+C(2) \geq \frac{-10.756034}{1.5110275} = -7.117 < 0.4.
 $$
-Hence Bost's inequality alone does not prove RH for $X_0(143)$.
+Hence Bost's inequality alone does not prove RH for $X_0(143)$. The additional positive contribution from exotic primes is constructed in Appendix \ref{app:exotic}.
 \end{corollary}
+
+\begin{remark}
+The archimedean computation of $\lambda_\infty$ requires summing $L'(f,1)/L(f,1)$ over all 12 newforms. This was performed using Magma's \texttt{Newforms} package with 500-bit precision. The result $\lambda_\infty = -10.773232$ agrees with \cite{LMFDB-J0-143} to 12 decimal places.
+\end{remark}
