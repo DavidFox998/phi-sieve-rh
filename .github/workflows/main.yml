@@ -1,0 +1,21 @@
+name: Lock S_14 SHA
+on: [push]
+jobs:
+  lock:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile print_S14
+        run: |
+          mkdir -p bin
+          gcc -O2 -static bin/print_S14.c -o bin/print_S14
+          echo "=== CANON SHA-256 ==="
+          sha256sum bin/print_S14 | tee bin/print_S14.sha256
+          echo "Expected: 85701061662b6584259446eade9262f9333e976b38024320b23ae753c5b19d75"
+      - name: Commit SHA
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add bin/print_S14.sha256
+          git commit -m "LOCK: S_14 SHA 8570106...9d75" || exit 0
+          git push
