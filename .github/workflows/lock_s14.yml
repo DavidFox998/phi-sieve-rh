@@ -1,1 +1,11 @@
-
+name: Lock S_14 SHA
+on: [push, workflow_dispatch]
+jobs:
+  lock:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: mkdir -p bin
+      - run: gcc -O2 -static bin/print_S14.c -o bin/print_S14
+      - run: sha256sum bin/print_S14 | tee bin/print_S14.sha256
+      - run: cat bin/print_S14.sha256
